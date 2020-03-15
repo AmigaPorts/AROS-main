@@ -44,6 +44,8 @@ Compiling AROS requires some external packages. If you already have them in `./b
 
 docker build --rm -t "amigadev/arosv1-cross-toolchain:x86_64" --build-arg HAVE_LOCAL_PACKAGES=1 -f Dockerfile.x86_64 .
 
+It also needs the [contribs packages](https://github.com/AmigaPorts/AROS-contrib) (third-party libraries). If you already have a "contrib" directory, it will be used instead of checking out the repo.
+
 To run the image for tests/debugging:
 
 docker run --rm -it "amigadev/arosv1-cross-toolchain:x86_64" /bin/bash

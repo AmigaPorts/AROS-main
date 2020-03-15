@@ -137,6 +137,8 @@ AROS_TESTS                    := $(AROS_DEBUG)/Tests
 AROS_ARCH_INCLUDES            = $(AROS_ARCH_SDK)/$(AROS_DIR_INCLUDE)
 AROS_INCLUDES                 := $(AROS_DEVELOPER)/$(AROS_TARGET_CPU)-aros/$(AROS_DIR_INCLUDE)
 #AROS_INCLUDES                := $(AROS_SDK)/$(AROS_DIR_INCLUDE)
+#$(warning AROS_INCLUDES is "$(AROS_INCLUDES)")
+
 AROS_ARCH_LIB                 = $(AROS_ARCH_SDK)/$(AROS_DIR_LIB)
 AROS_LIB                      := $(AROS_DEVELOPER)/$(AROS_TARGET_CPU)-aros/$(AROS_DIR_LIB)
 #AROS_LIB                     := $(AROS_SDK)/$(AROS_DIR_LIB)

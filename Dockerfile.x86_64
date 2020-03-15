@@ -21,18 +21,20 @@ RUN if [ "$HAVE_LOCAL_PACKAGES" = 1 ]; \
 
 # Retrieve contribs (needed for SDL): will be available in /work/contrib
 # note: dir name MUST be "contrib"
-RUN git clone https://github.com/AmigaPorts/AROS-contrib.git contrib \
-	&& mkdir -p $BUILD_DIR \
-	&& cd $BUILD_DIR \
-	&& /work/configure --target=$BUILD_EXT $BUILD_CONFIGUREEXTRAS --enable-ccache \
-		--with-iconset=$BUILD_ICONSET --enable-build-type=nightly \
-		--with-serial-debug --with-binutils-version=$BUILD_BINUTILSVER \
-		--with-gcc-version=$BUILD_GCCVER  --with-aros-toolchain-install=/opt/$BUILD_PREFIX \
-	&& make -j$(getconf _NPROCESSORS_ONLN) \
-	&& make -j$(getconf _NPROCESSORS_ONLN) crosstools-toolchain \
-	&& make -j$(getconf _NPROCESSORS_ONLN) default-x11keymaptable \
-	&& make -j$(getconf _NPROCESSORS_ONLN) contrib-SDL \
-	&& make distfiles
+RUN if [ ! -d "/work/contrib" ]; \
+        then git clone https://github.com/AmigaPorts/AROS-contrib.git contrib; \
+fi
+
+RUN mkdir -p $BUILD_DIR && cd $BUILD_DIR \
+        && /work/configure --target=$BUILD_EXT --enable-ccache \
+                --with-iconset=$BUILD_ICONSET --enable-build-type=nightly \
+                --with-serial-debug --with-binutils-version=$BUILD_BINUTILSVER \
+        --with-gcc-version=$BUILD_GCCVER  --with-aros-toolchain-install=/opt/$BUILD_PREFIX \
+        && cd $BUILD_DIR && make -j$(getconf _NPROCESSORS_ONLN) \
+        && cd $BUILD_DIR && make -j$(getconf _NPROCESSORS_ONLN) crosstools-toolchain \
+        && make -j$(getconf _NPROCESSORS_ONLN) default-x11keymaptable \
+        && make -j$(getconf _NPROCESSORS_ONLN) contrib-SDL \
+        && make distfiles
 
 RUN cp -fvr /work/bin/$BUILD_EXT/AROS/Developer/* /opt/$BUILD_PREFIX/$BUILD_PREFIX
 RUN cp -fvr /work/bin/$BUILD_EXT/AROS/Extras/Developer/* /opt/$BUILD_PREFIX
