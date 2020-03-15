@@ -9725,7 +9725,7 @@ if test "x$aros_toolchain_install" = "x"; then
     AROS_CROSSTOOLSDIR="$AROS_BUILDDIR_UNIX/bin/$aros_host_arch-$aros_host_cpu/tools/crosstools"
 else
     AROS_CROSSTOOLSDIR="$aros_toolchain_install"
-    PATH="$AROS_CROSSTOOLSDIR/bin:$PATH"
+    PATH="$AROS_CROSSTOOLSDIR:$PATH"
     if test "$crosstools_guess" = "no" ; then
         if test "x-$aros_flavour" != "x-emulation" -a "x-$aros_flavour" != "x-emulcompat" ; then
             aros_kernel_sysroot="$""(TARGET_SYSROOT)"
@@ -9786,7 +9786,7 @@ if ${ax_cv_gcc_version+:} false; then :
   $as_echo_n "(cached) " >&6
 else
 
-    ax_cv_gcc_version="`$AROS_CROSSTOOLSDIR/bin/${aros_tool_prefix}${toolchain_cpp_preprocessor}$(toolchain_cpp_opts) -dumpversion`"
+    ax_cv_gcc_version="`$AROS_CROSSTOOLSDIR/${aros_tool_prefix}${toolchain_cpp_preprocessor}$(toolchain_cpp_opts) -dumpversion`"
     if test "x$ax_cv_gcc_version" = "x"; then :
 
       ax_cv_gcc_version=""
@@ -9878,7 +9878,7 @@ if ${ax_cv_llvm_version+:} false; then :
   $as_echo_n "(cached) " >&6
 else
 
-    ax_cv_llvm_version="`$AROS_CROSSTOOLSDIR/bin/${aros_tool_prefix}${toolchain_cpp_preprocessor}$(toolchain_cpp_opts) -dumpversion`"
+    ax_cv_llvm_version="`$AROS_CROSSTOOLSDIR/${aros_tool_prefix}${toolchain_cpp_preprocessor}$(toolchain_cpp_opts) -dumpversion`"
     if test "x$ax_cv_llvm_version" = "x"; then :
 
       ax_cv_llvm_version=""
@@ -12538,7 +12538,7 @@ if test "$aros_target_toolchain" = "yes"; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: $msg_result" >&5
 $as_echo "$msg_result" >&6; }
     # We are building AROS crosstools
-    tmp_tool_prefix="$AROS_CROSSTOOLSDIR/bin/${target_tool_prefix}"
+    tmp_tool_prefix="$AROS_CROSSTOOLSDIR/${target_tool_prefix}"
     orig_target_cc="${tmp_tool_prefix}${toolchain_c_compiler}${target_tool_version}"
     orig_target_cxx="${tmp_tool_prefix}${toolchain_cxx_compiler}${target_tool_version}"
     orig_target_cpp="${tmp_tool_prefix}${toolchain_cpp_preprocessor}${toolchain_cpp_opts}"
@@ -14840,8 +14840,7 @@ aros_kernel_ar="$aros_kernel_ar $aros_kernel_ar_flags"
 
 aros_hostcfg_dir="bin/${aros_host_arch}-${aros_host_cpu}/gen/host/config"
 aros_targetcfg_dir="bin/${aros_target_arch}-${aros_target_cpu}${aros_target_suffix}/gen/config"
-#aros_inc_dir="bin/${aros_target_arch}-${aros_target_cpu}${aros_target_suffix}/AROS/Developer/include/aros"
-aros_inc_dir="$AROS_CROSSTOOLSDIR/${aros_target_cpu}-aros/include/aros"
+aros_inc_dir="bin/${aros_target_arch}-${aros_target_cpu}${aros_target_suffix}/AROS/Developer/include/aros"
 aros_gendir="bin/${aros_target_arch}-${aros_target_cpu}${aros_target_suffix}/gen"
 aros_geninc_dir="bin/${aros_target_arch}-${aros_target_cpu}${aros_target_suffix}/gen/include/aros"
 aros_tools_dir="bin/${aros_host_arch}-${aros_host_cpu}/tools"
@@ -14890,7 +14889,7 @@ else
     # here is different for different versions so this will be set later during the
     # build of crosstools.
     if test "$aros_toolchain" = "gnu" ; then
-        prefix="$AROS_CROSSTOOLSDIR/bin/${aros_target_cpu}-aros-"
+        prefix="$AROS_CROSSTOOLSDIR/${aros_target_cpu}-aros-"
     elif test "$aros_toolchain" = "llvm" ; then
         prefix="$AROS_CROSSTOOLSDIR/bin/"
     fi
@@ -16423,7 +16422,7 @@ ac_config_headers="$ac_config_headers ${aros_geninc_dir}/host-conf.h:config/host
 # Generic build tools (metamake, etc)
 ac_config_commands="$ac_config_commands genmf-executable-support"
 
-ac_config_files="$ac_config_files Makefile config/make.cfg ${aros_inc_dir}/config.h:config/config.h.in ${aros_geninc_dir}/config.h:config/config.h.in ${aros_hostcfg_dir}/host.cfg:config/host.cfg.in ${aros_targetcfg_dir}/target.cfg:config/target.cfg.in ${aros_targetcfg_dir}/build.cfg:config/build.cfg.in mmake.config compiler/include/geninc.cfg:compiler/include/geninc.cfg.in ${aros_targetcfg_dir}/make.defaults:config/make.defaults.in ${aros_tools_dir}/genmf.py:tools/genmf/genmf.py ${AROS_CROSSTOOLSDIR}/bin/${aros_target_cpu}-aros-uname:scripts/uname.in tools/collect-aros/env.h"
+ac_config_files="$ac_config_files Makefile config/make.cfg ${aros_inc_dir}/config.h:config/config.h.in ${aros_geninc_dir}/config.h:config/config.h.in ${aros_hostcfg_dir}/host.cfg:config/host.cfg.in ${aros_targetcfg_dir}/target.cfg:config/target.cfg.in ${aros_targetcfg_dir}/build.cfg:config/build.cfg.in mmake.config compiler/include/geninc.cfg:compiler/include/geninc.cfg.in ${aros_targetcfg_dir}/make.defaults:config/make.defaults.in ${aros_tools_dir}/genmf.py:tools/genmf/genmf.py ${AROS_CROSSTOOLSDIR}/${aros_target_cpu}-aros-uname:scripts/uname.in tools/collect-aros/env.h"
 
 
 # Binutils
@@ -17207,7 +17206,7 @@ do
     "compiler/include/geninc.cfg") CONFIG_FILES="$CONFIG_FILES compiler/include/geninc.cfg:compiler/include/geninc.cfg.in" ;;
     "${aros_targetcfg_dir}/make.defaults") CONFIG_FILES="$CONFIG_FILES ${aros_targetcfg_dir}/make.defaults:config/make.defaults.in" ;;
     "${aros_tools_dir}/genmf.py") CONFIG_FILES="$CONFIG_FILES ${aros_tools_dir}/genmf.py:tools/genmf/genmf.py" ;;
-    "${AROS_CROSSTOOLSDIR}/bin/${aros_target_cpu}-aros-uname") CONFIG_FILES="$CONFIG_FILES ${AROS_CROSSTOOLSDIR}/bin/${aros_target_cpu}-aros-uname:scripts/uname.in" ;;
+    "${AROS_CROSSTOOLSDIR}/${aros_target_cpu}-aros-uname") CONFIG_FILES="$CONFIG_FILES ${AROS_CROSSTOOLSDIR}/${aros_target_cpu}-aros-uname:scripts/uname.in" ;;
     "tools/collect-aros/env.h") CONFIG_FILES="$CONFIG_FILES tools/collect-aros/env.h" ;;
     "binutils-support") CONFIG_COMMANDS="$CONFIG_COMMANDS binutils-support" ;;
     "${aros_tools_dir}/${aros_target_cpu}-${aros_target_arch}${aros_target_suffix}-aros-${aros_ld}") CONFIG_FILES="$CONFIG_FILES ${aros_tools_dir}/${aros_target_cpu}-${aros_target_arch}${aros_target_suffix}-aros-${aros_ld}:scripts/aros-ld.in" ;;
@@ -17772,7 +17771,7 @@ $as_echo "$as_me: executing $ac_file commands" >&6;}
 
   case $ac_file$ac_mode in
     "genmf-executable-support":C)
-        chmod a+x ${AROS_CROSSTOOLSDIR}/bin/${aros_target_cpu}-aros-uname
+        chmod a+x ${AROS_CROSSTOOLSDIR}/${aros_target_cpu}-aros-uname
         chmod a+x ${aros_tools_dir}/genmf.py
      ;;
     "binutils-support":C)

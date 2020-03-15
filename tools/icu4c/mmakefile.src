@@ -7,8 +7,8 @@ ICU_PKGNAME := icu4c
 ICU_PKGVERSION=$(subst .,_,$(ICU_VERSION))
 
 ICU_EXTRA_OPTS = \
-        --bindir=$(CROSSTOOLSDIR)/bin \
-        --sbindir=$(CROSSTOOLSDIR)/bin \
+        --bindir=$(CROSSTOOLSDIR) \
+        --sbindir=$(CROSSTOOLSDIR) \
         --enable-static \
         --disable-strict \
         --disable-dyload \

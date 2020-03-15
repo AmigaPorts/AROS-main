@@ -22,7 +22,7 @@ tools-crosstools-collect-aros-quick :
 	@$(IF) ! $(TEST) -f $(collect-aros-installflag) ; then \
 	       $(MAKE) COLLECT-AROS=$(CROSSTOOLSDIR)/$(AROS_TARGET_CPU)-aros/bin/collect-aros USER_CFLAGS="-D_CROSS_" \
 	    && $(HOST_STRIP) $(CROSSTOOLSDIR)/$(AROS_TARGET_CPU)-aros/bin/collect-aros \
-	    && $(CP) $(CROSSTOOLSDIR)/$(AROS_TARGET_CPU)-aros/bin/collect-aros $(CROSSTOOLSDIR)/bin/$(AROS_TARGET_CPU)-aros-collect-aros \
+	    && $(CP) $(CROSSTOOLSDIR)/$(AROS_TARGET_CPU)-aros/bin/collect-aros $(CROSSTOOLSDIR)/$(AROS_TARGET_CPU)-aros-collect-aros \
 	    && $(TOUCH) $(CROSSTOOLSDIR) $(collect-aros-installflag) ; \
 	fi
 

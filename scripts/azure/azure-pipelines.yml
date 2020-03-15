@@ -31,13 +31,27 @@ jobs:
 
   steps:
   - script: |
+      if [ "$AROSBUILD_TOOLCHAIN_FAMILY" != "" ]; then
+        export TARGETTOOLCHAINOPTS="--with-toolchain=$(arosbuild.toolchain.family)"
+        export TARGETTOOLCHAIN="$(arosbuild.toolchain.family)"
+      else
+        export TARGETTOOLCHAIN="gnu"
+      fi
+      echo "Preparing environment for build with $TARGETTOOLCHAIN toolchain"
+      df -H
+      echo "##vso[task.setvariable variable=TOOLCHAIN;]$TARGETTOOLCHAIN"
+      echo "##vso[task.setvariable variable=TOOLCHAINOPTS;]$TARGETTOOLCHAINOPTS"
+    displayName: 'Preparing common environment...'
+
+  - script: |
       if [ "$AROSBUILD_CONFIG_EXTRA" != "" ]; then
-        CONFIGOPTS="$(arosbuild.config.extra)"
+        CONFIGOPTS="$CONFIGOPTS $(arosbuild.config.extra)"
       fi
       CONFIGOPTS="$CONFIGOPTS --target=$(arosbuild.target)"
       if [ "$AROSBUILD_VARIANT" != "" ]; then
         CONFIGOPTS="$CONFIGOPTS --enable-target-variant=$(arosbuild.variant)"
       fi
+      CONFIGOPTS="$CONFIGOPTS $TOOLCHAINOPTS"
       if [ "$AROSBUILD_GCC_VERSION" != "" ]; then
         CONFIGOPTS="$CONFIGOPTS --with-gcc-version=$(arosbuild.gcc.version)"
       fi
@@ -55,7 +69,7 @@ jobs:
         CONFIGOPTS="$CONFIGOPTS --with-kernel-toolchain-prefix=i686-w64-mingw32-"
       fi
       CONFIGOPTS="$CONFIGOPTS --enable-ccache --enable-build-type=nightly --with-portssources=$(AROSPORTSSRCSDIR)"
-      echo "##vso[task.setvariable variable=AROSCONFIGOPTIONS]$CONFIGOPTS"
+      echo "##vso[task.setvariable variable=AROSCONFIGOPTIONS;]$CONFIGOPTS"
     condition: eq( variables['Agent.OS'], 'Linux' )
     displayName: 'Installing AROS build dependencies for Ubuntu'
 
@@ -67,6 +81,7 @@ jobs:
       if [ "$AROSBUILD_VARIANT" != "" ]; then
         CONFIGOPTS="$CONFIGOPTS --enable-target-variant=$(arosbuild.variant)"
       fi
+      CONFIGOPTS="$CONFIGOPTS $TOOLCHAINOPTS"
       if [ "$AROSBUILD_GCC_VERSION" != "" ]; then
         CONFIGOPTS="$CONFIGOPTS --with-gcc-version=$(arosbuild.gcc.version)"
       fi
@@ -87,7 +102,7 @@ jobs:
       brew install https://raw.githubusercontent.com/kadwanev/bigboybrew/master/Library/Formula/sshpass.rb
       ln -s /opt/X11/include/X11 /usr/include/X11
       CONFIGOPTS="$CONFIGOPTS --enable-ccache --enable-build-type=nightly --with-portssources=$(AROSPORTSSRCSDIR)"
-      echo "##vso[task.setvariable variable=AROSCONFIGOPTIONS]$CONFIGOPTS"
+      echo "##vso[task.setvariable variable=AROSCONFIGOPTIONS;]$CONFIGOPTS"
     condition: eq( variables['Agent.OS'], 'Darwin' )
     displayName: 'Installing AROS build dependencies for MacOS'
 
@@ -124,8 +139,8 @@ jobs:
       make -j 2
       sudo make install
       sudo find /opt/gcc/x86/8/lib/gcc -name '*.h' -exec grep -q 'It has been auto-edited by fixincludes from' {} \; -delete
-      echo "##vso[task.setvariable variable=CC]/opt/gcc/x86/8/bin/gcc"
-      echo "##vso[task.setvariable variable=CXX]/opt/gcc/x86/8/bin/g++"
+      echo "##vso[task.setvariable variable=CC;]/opt/gcc/x86/8/bin/gcc"
+      echo "##vso[task.setvariable variable=CXX;]/opt/gcc/x86/8/bin/g++"
       if [ "$AROSBUILD_TARGET" = "darwin-ppc" ]; then
         echo 'Building darwin PPC toolchain'
         mkdir -p '$(AZBUILDPATH)/host/ppc/gcc'
@@ -141,7 +156,7 @@ jobs:
         make -j 2
         sudo make install
         sudo find /opt/gcc/ppc/8/lib/gcc -name '*.h' -exec grep -q 'It has been auto-edited by fixincludes from' {} \; -delete
-        echo "##vso[task.setvariable variable=MACOSX_PPC_DEPLOYMENT_TARGET]$MACOSX_PPC_DEPLOYMENT_TARGET"
+        echo "##vso[task.setvariable variable=MACOSX_PPC_DEPLOYMENT_TARGET;]$MACOSX_PPC_DEPLOYMENT_TARGET"
         CONFIGOPTS="$(AROSCONFIGOPTIONS) --with-kernel-toolchain-prefix=powerpc-apple-darwin10.8.0-"
         echo "##vso[task.setvariable variable=AROSCONFIGOPTIONS]$CONFIGOPTS"
       fi
@@ -169,9 +184,9 @@ jobs:
       echo '##vso[task.prependpath]$(AROSPORTSSRCSDIR)'
       echo '##vso[task.prependpath]$(AROSLOGSDIR)'
       BUILDDATE=$(date -u +'%Y%m%d')
-      echo "##vso[task.setvariable variable=arosbuilddate]$BUILDDATE"
-      echo "##vso[task.setvariable variable=arosbuildid]AROS-$BUILDDATE"
-      echo "##vso[task.setvariable variable=AROSPACKAGEDIR]$(AROSBUILDSDIR)/AROS-$BUILDDATE-$(arosbuild.name)-$(arosbuild.package)"
+      echo "##vso[task.setvariable variable=arosbuilddate;]$BUILDDATE"
+      echo "##vso[task.setvariable variable=arosbuildid;]AROS-$BUILDDATE"
+      echo "##vso[task.setvariable variable=AROSPACKAGEDIR;]$(AROSBUILDSDIR)/AROS-$BUILDDATE-$(arosbuild.name)-$(arosbuild.package)"
       echo "Common BUILD dir '$(AROSBUILDSDIR)'"
       echo "Common TOOLCHAIN dir '$(AROSBUILDTOOLCHAINDIR)'"
       echo "Common PORTSSOURCES dir '$(AROSPORTSSRCSDIR)'"
@@ -257,7 +272,7 @@ jobs:
       }
       execute $(AROSSRCDIR)/configure $(AROSCONFIGOPTIONS) --with-aros-toolchain-install=$(AROSBUILDTOOLCHAINDIR)
     workingDirectory: '$(AROSBUILDDIR)'
-    displayName: 'Configuring $(arosbuild.name) Toolchain'
+    displayName: 'Configuring $(arosbuild.name) $(TOOLCHAIN) Toolchain'
 
   - script: |
       function execute {
@@ -275,7 +290,7 @@ jobs:
       execute make -j 2 crosstools
       rm -Rf $(AROSBUILDDIR)/*
     workingDirectory: '$(AROSBUILDDIR)'
-    displayName: 'Build $(arosbuild.name) Toolchain'
+    displayName: 'Build $(arosbuild.name) $(TOOLCHAIN) Toolchain'
 
   - script: |
       function execute {

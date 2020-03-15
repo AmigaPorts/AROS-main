@@ -125,9 +125,8 @@ AROS_UTILITIES                := $(AROSDIR)/$(AROS_DIR_UTILITIES)
 AROS_CONTRIB                  := $(AROSDIR)/$(AROS_DIR_CONTRIB)
 
 # Absolute paths for developer directories
-AROS_DEVELOPER                := $(CROSSTOOLSDIR)
-# $(AROSDIR)/$(AROS_DIR_DEVELOPER)
-AROS_SDK                      ?= $(AROS_DEVELOPER)/$(AROS_TARGET_CPU)-aros/$(AROS_DIR_SDK)
+AROS_DEVELOPER                := $(AROSDIR)/$(AROS_DIR_DEVELOPER)
+AROS_SDK                      ?= $(AROS_DEVELOPER)/$(AROS_DIR_SDK)
 AROS_ARCH_SDK                 ?= $(AROS_SDK)/$(AROS_TARGET_CPU)-$(AROS_TARGET_ARCH)$(AROS_TARGET_SUFFIX)-aros
 AROS_DEV_ARCH_BINS            := $(AROS_DEVELOPER)/$(AROS_TARGET_CPU)-aros/$(AROS_DIR_BIN)
 AROS_DEV_BINS                 := $(AROS_DEVELOPER)/$(AROS_DIR_BIN)
@@ -135,12 +134,12 @@ AROS_DEBUG                    := $(AROS_DEVELOPER)/Debug
 AROS_SDK_FD                   := $(AROS_SDK)/$(AROS_DIR_FD)
 AROS_TESTS                    := $(AROS_DEBUG)/Tests
 AROS_ARCH_INCLUDES            = $(AROS_ARCH_SDK)/$(AROS_DIR_INCLUDE)
-AROS_INCLUDES                 := $(AROS_DEVELOPER)/$(AROS_TARGET_CPU)-aros/$(AROS_DIR_INCLUDE)
+AROS_INCLUDES                 := $(AROS_DEVELOPER)/$(AROS_DIR_INCLUDE)
 #AROS_INCLUDES                := $(AROS_SDK)/$(AROS_DIR_INCLUDE)
 #$(warning AROS_INCLUDES is "$(AROS_INCLUDES)")
 
 AROS_ARCH_LIB                 = $(AROS_ARCH_SDK)/$(AROS_DIR_LIB)
-AROS_LIB                      := $(AROS_DEVELOPER)/$(AROS_TARGET_CPU)-aros/$(AROS_DIR_LIB)
+AROS_LIB                      := $(AROS_DEVELOPER)/$(AROS_DIR_LIB)
 #AROS_LIB                     := $(AROS_SDK)/$(AROS_DIR_LIB)
 
 AROS_CONTRIB_DEVELOPER        := $(AROS_CONTRIB)/$(AROS_DIR_DEVELOPER)
@@ -177,7 +176,7 @@ INFOINFO                      := $(TOOLDIR)/infoinfo$(HOST_EXE_SUFFIX)
 GENSETS                       := $(TOOLDIR)/gensets$(HOST_EXE_SUFFIX)
 COLLECT-AROS                  := $(TOOLDIR)/collect-aros$(HOST_EXE_SUFFIX)
 GENMODULE                     := $(TOOLDIR)/genmodule$(HOST_EXE_SUFFIX)
-MKKEYMAP                      := $(TOOLDIR)/mkkeymap$(HOST_EXE_SUFFIX)
+MKKEYMAP                     := $(TOOLDIR)/mkkeymap$(HOST_EXE_SUFFIX)
 SETREV                        := $(TOOLDIR)/setrev$(HOST_EXE_SUFFIX)
 @make_extra_commands@
 RESIDENT_BEGIN                := compiler/libinit/libentry
@@ -187,7 +186,7 @@ AROS_CC                       := $(TARGET_CC)
 ifneq ($(TARGET_CXX),)
     AROS_CXX                  := $(TARGET_CXX)
 else
-    AROS_CXX                  := $(CROSSTOOLSDIR)/bin/$(AROS_TARGET_CPU)-aros-g++
+    AROS_CXX                  := $(CROSSTOOLSDIR)/$(AROS_TARGET_CPU)-aros-g++
 endif
 AROS_CXXEXTS                  := cpp cxx cc c++
 AROS_AS                       := $(TARGET_AS)
@@ -284,7 +283,7 @@ KOBJSDIR                      := $(GENDIR)/kobjs
 ifeq ($(AROS_PATH_SET),)
     TMP_TOOLDIR               := $(shell echo $(TOOLDIR) | sed 's/^\(.\):\//\/\1\//')
     TMP_CROSSTOOLSDIR         := $(shell echo $(CROSSTOOLSDIR) | sed 's/^\(.\):\//\/\1\//')
-    PATH                      := $(TMP_CROSSTOOLSDIR)/bin:$(TMP_TOOLDIR):$(TMP_TOOLDIR)/$(AROS_TARGET_CPU)-$(AROS_TARGET_ARCH)$(AROS_TARGET_SUFFIX):$(PATH)
+    PATH                      := $(TMP_CROSSTOOLSDIR):$(TMP_TOOLDIR):$(TMP_TOOLDIR)/$(AROS_TARGET_CPU)-$(AROS_TARGET_ARCH)$(AROS_TARGET_SUFFIX):$(PATH)
     AROS_PATH_SET             := yes
     export PATH AROS_PATH_SET
 endif
