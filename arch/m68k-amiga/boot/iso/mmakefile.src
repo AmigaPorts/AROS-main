@@ -87,8 +87,27 @@ $(TARGET_ISO): $(AROSDIR)/.backdrop \
 	@$(ELF2HUNK) $(QE2H) "$(AROSDIR)" "$(AROSDIR).HUNK"
 	@$(RM) -rf "$(AROSDIR).HUNK/Sources"*
 	@$(RM) -rf "$(AROSDIR).HUNK/$(AROS_DIR_ARCH)/aros.elf"
+	@$(RM) -rf "$(AROSDIR).HUNK/Prefs/Env-Archive/SYS/theme.var"
+	@$(RM) -rf "$(AROSDIR).HUNK/Developer/include"
+	@$(RM) -rf "$(AROSDIR).HUNK/Developer/lib"
+	@$(RM) -rf "$(AROSDIR).HUNK/Developer/man"
+	@$(RM) -rf "$(AROSDIR).HUNK/Developer/S" "$(AROSDIR).HUNK/Developer/Include.info" "$(AROSDIR).HUNK/Developer/Lib.info"
+	@$(RM) -rf "$(AROSDIR).HUNK/Prefs/Presets/Patterns/WallpaperComp2007"
+	@$(RM) -rf "$(AROSDIR).HUNK/Fonts/TrueType/DejaVu"*
+	@$(SED) -i '1s/^/IF EXISTS c\/acatune \
+		  If NOT EXISTS boot\/amiga\/aros-1mb.bin \
+		    JOIN boot\/amiga\/aros-ext.bin boot\/amiga\/aros-rom.bin AS boot\/amiga\/aros-1mb.bin \
+		  Endif \
+		  c\/acatune maprom boot\/amiga\/aros-1mb.bin maxmem >NIL: \
+		ELSE \
+		  boot\/amiga\/AROSBootstrap ROM boot\/amiga\/aros.hunk.gz \
+		ENDIF\
+		\n/' "$(AROSDIR).HUNK/S/Startup-Sequence"
+	@$(SED) -i 's/^[\t]*//' "$(AROSDIR).HUNK/S/Startup-Sequence"
 	@$(CP) "$(AROSDIR)/Emergency-Boot/$(AROS_DIR_ARCH)/aros.hunk.gz" "$(AROSDIR).HUNK/$(AROS_DIR_ARCH)"
 	@$(CP) $(SRCDIR)/arch/m68k-amiga/boot/iso/Wanderer-global.prefs "$(AROSDIR).HUNK/Prefs/Env-Archive/SYS/Wanderer/global.prefs"
+	@$(CP) "$(AROSDIR).HUNK/README.txt" "$(DISTDIR)/README"
+#	@$(CP) -fv "$(AROSDIR).HUNK/boot/*/*.bin" "$(DISTDIR)/"
 	@mkisofs -f \
 		-o $@ \
 		-allow-leading-dots \
@@ -99,6 +118,9 @@ $(TARGET_ISO): $(AROSDIR)/.backdrop \
 		-sysid "AROS-$(AROS_TARGET_CPU)-$(AROS_TARGET_ARCH)" \
                 -l -J -r \
 		"$(AROSDIR).HUNK"
+	@cd $(AROSDIR).HUNK ; lha c $(DISTDIR)/aros-$(AROS_TARGET_ARCH)-$(AROS_TARGET_CPU)-boot.lha AROS.HUNK *
+#	@rdbtool $(DISTDIR)/aros-$(AROS_TARGET_ARCH)-$(AROS_TARGET_CPU)-boot.hdf create size=100Mi + init + add 100% dostype=ffs+intl bootable=true boot_pri=0 max_transfer=0x1fe00 num_buffer=80
+#	@xdftool $(DISTDIR)/aros-$(AROS_TARGET_ARCH)-$(AROS_TARGET_CPU)-boot.hdf open 0 + pack $(AROSDIR).HUNK
 
 $(DEVEL_ISO):   $(AROSDIR)/.backdrop \
 		$(AROSDIR)/Emergency-Boot.adf \

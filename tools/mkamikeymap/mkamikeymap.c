@@ -10,7 +10,8 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "mkkeymap.h"
+#include "mkamikeymap.h"
+#include "debug.h"
 
 int main(int argc, char **argv)
 {
@@ -20,7 +21,7 @@ int main(int argc, char **argv)
 
     if (cfg->verbose)
     {
-        fprintf(stdout, "mkkeymap 0.1 © 2020, The AROS Development Team.\n");
+        fprintf(stdout, "mkamikeymap 0.4 © 2020, The AROS Development Team.\n");
 
         fprintf(stdout, "parsing descriptor: %s\n", cfg->descriptor);
     }
@@ -39,9 +40,10 @@ int main(int argc, char **argv)
                 *ext = '\0';
             }
         }
-
-        if (cfg->verbose)
-            fprintf(stdout, "creating keymap '%s'\n", cfg->keymap);
+        if (writeKeyMap(cfg))
+        {
+            D(fprintf(stdout, "%s successfully generated\n", cfg->keymap);)
+        }
     }
 
     return 0;

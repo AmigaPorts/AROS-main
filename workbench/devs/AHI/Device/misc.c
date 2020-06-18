@@ -143,6 +143,13 @@ SprintfA( char *dst, const char *fmt, IPTR* args )
 }
 
 /******************************************************************************
+** For future reference: AHI#?Semaphore functions are used in functions
+** which get called in supervisor mode. The standard Exec functions raise
+** 0x00000008 - Privilege violation error when being called in supervisor
+** mode, thus the implementation below which is "almost" the same as Exec's
+******************************************************************************/
+
+/******************************************************************************
 ** AHIInitSemaphore ***********************************************************
 ******************************************************************************/
 

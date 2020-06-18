@@ -141,9 +141,9 @@ OOP_Object *METHOD(GMABM, Root, New)
 
                     /* Get Sync and PixelFormat properties */
                     struct pHidd_Gfx_GetMode __getmodemsg = {
-                        modeID: modeid,
-                        syncPtr:    &sync,
-                        pixFmtPtr:  &pf,
+                        .modeID = modeid,
+                        .syncPtr =    &sync,
+                        .pixFmtPtr =  &pf,
                     }, *getmodemsg = &__getmodemsg;
 
                     getmodemsg->mID = OOP_GetMethodID((STRPTR)CLID_Hidd_Gfx, moHidd_Gfx_GetMode);
@@ -319,10 +319,10 @@ VOID METHOD(GMABM, Root, Set)
     /* If there was a change requested, validate it */
     struct pHidd_Compositor_ValidateBitMapPositionChange vbpcmsg =
     {
-        mID : SD(cl)->mid_ValidateBitMapPositionChange,
-        bm : o,
-        newxoffset : &newxoffset,
-        newyoffset : &newyoffset
+        .mID = SD(cl)->mid_ValidateBitMapPositionChange,
+        .bm = o,
+        .newxoffset = &newxoffset,
+        .newyoffset = &newyoffset
     };
     
     OOP_DoMethod(bmdata->compositor, (OOP_Msg)&vbpcmsg);
@@ -332,8 +332,8 @@ VOID METHOD(GMABM, Root, Set)
         /* If change passed validation, execute it */
         struct pHidd_Compositor_BitMapPositionChanged bpcmsg =
         {
-            mID : SD(cl)->mid_BitMapPositionChanged,
-            bm : o
+            .mID = SD(cl)->mid_BitMapPositionChanged,
+            .bm = o
         };
     
         bmdata->xoffset = newxoffset;
@@ -536,6 +536,12 @@ VOID METHOD(GMABM, Hidd_BitMap, DrawPixel)
     UNLOCK_BITMAP
 }
 
+#define _drawpixel(x,y) \
+{ \
+    OUT_RING((2 << 29) | (0x24 << 22) ); \
+    OUT_RING((y << 16) | x); \
+}
+
 VOID METHOD(GMABM, Hidd_BitMap, DrawEllipse)
 {
 	GMABitMap_t *bm = OOP_INST_DATA(cl, o);
@@ -556,11 +562,6 @@ VOID METHOD(GMABM, Hidd_BitMap, DrawEllipse)
     src       = GC_FG(gc);
     mode      = GC_DRMD(gc);
 
-	void _drawpixel(int x, int y)
-	{
-		OUT_RING((2 << 29) | (0x24 << 22) );
-		OUT_RING((y << 16) | x);
-	}
 
 	LOCK_BITMAP
 
@@ -685,12 +686,6 @@ VOID METHOD(GMABM, Hidd_BitMap, DrawLine)
 
     src       = GC_FG(gc);
     mode      = GC_DRMD(gc);
-
-	void _drawpixel(int x, int y)
-	{
-		OUT_RING((2 << 29) | (0x24 << 22) );
-		OUT_RING((y << 16) | x);
-	}
 
     if (doclip)
     {
@@ -979,12 +974,12 @@ VOID METHOD(GMABM, Hidd_BitMap, ReleaseDirectAccess)
     {
         struct pHidd_Compositor_BitMapRectChanged brcmsg =
         {
-            mID : SD(cl)->mid_BitMapRectChanged,
-            bm : o,
-            x : 0,
-            y : 0,
-            width : bm->width,
-            height : bm->height
+            .mID = SD(cl)->mid_BitMapRectChanged,
+            .bm = o,
+            .x = 0,
+            .y = 0,
+            .width = bm->width,
+            .height = bm->height
         };
         OOP_DoMethod(bm->compositor, (OOP_Msg)&brcmsg);    
     }
@@ -1556,10 +1551,14 @@ VOID METHOD(GMABM, Hidd_BitMap, PutImage)
 		        		}
 
 						/* Wait until both buffer are ready */
-						while(readl(&sd->HardwareStatusPage[17]) == 0);
-						while(readl(&sd->HardwareStatusPage[18]) == 0);
-						while(readl(&sd->HardwareStatusPage[19]) == 0);
-						while(readl(&sd->HardwareStatusPage[20]) == 0);
+						while(readl(&sd->HardwareStatusPage[17]) == 0)
+                                                        ;
+						while(readl(&sd->HardwareStatusPage[18]) == 0)
+                                                        ;
+						while(readl(&sd->HardwareStatusPage[19]) == 0)
+                                                        ;
+						while(readl(&sd->HardwareStatusPage[20]) == 0)
+                                                        ;
 
 			    		UNLOCK_HW
 
@@ -2170,12 +2169,12 @@ VOID METHOD(GMABM, Hidd_BitMap, UpdateRect)
     {
         struct pHidd_Compositor_BitMapRectChanged brcmsg =
         {
-            mID : SD(cl)->mid_BitMapRectChanged,
-            bm : o,
-            x : msg->x,
-            y : msg->y,
-            width : msg->width,
-            height : msg->height
+            .mID = SD(cl)->mid_BitMapRectChanged,
+            .bm = o,
+            .x = msg->x,
+            .y = msg->y,
+            .width = msg->width,
+            .height = msg->height
         };
         OOP_DoMethod(bmdata->compositor, (OOP_Msg)&brcmsg);    
     }
