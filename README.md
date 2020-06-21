@@ -49,11 +49,6 @@ Checkout contrib packages
 
 `git clone https://github.com/AmigaPorts/AROS-contrib.git contrib`
 
-```
-$ pwd
-~/path/AROS-main
-$ mkdir contrib
-
 Prepare for the build
 
 ```
@@ -69,6 +64,7 @@ rm -rf /opt/$BUILD_PREFIX && mkdir /opt/$BUILD_PREFIX
 DEST=tmp-build
 rm -rf $DEST && mkdir $DEST
 cp -r AROS-main/bin $DEST
+cp -r AROS-main/contrib $DEST
 cd $DEST
 
 ../AROS-main/configure \
