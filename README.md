@@ -30,25 +30,80 @@
 | darwin-ppc | [![Build Status](https://dev.azure.com/aros-development-team/AROS/_apis/build/status/aros-development-team.AROS-darwin-ppc?branchName=master)](https://dev.azure.com/aros-development-team/AROS/_build/latest?definitionId=25&branchName=master) | --- |
 | mingw32-i386 | [![Build Status](https://dev.azure.com/aros-development-team/AROS/_apis/build/status/aros-development-team.AROS-mingw32-i386?branchName=master)](https://dev.azure.com/aros-development-team/AROS/_build/latest?definitionId=23&branchName=master) | --- |
 
+## Building from sources
+
+### Requirements
+
+See [aros.org](http://www.aros.org/documentation/developers/compiling.php#getting-the-needed-packages)
+
+**20200315 UPDATE**: comment every occurrence of `#MM` in `./workbench/devs/keymaps/mmakefile.src`
+
+Checkout the sources
+
+```
+git clone git@github.com:AmigaPorts/AROS-main.git
+git submodule update --init --recursive
+```
+
+Checkout contrib packages
+
+`git clone https://github.com/AmigaPorts/AROS-contrib.git contrib`
+
+```
+$ pwd
+~/path/AROS-main
+$ mkdir contrib
+
+Prepare for the build
+
+```
+export BUILD_EXT="linux-x86_64"
+export BUILD_ICONSET="default"
+export BUILD_BINUTILSVER="2.32"
+export BUILD_GCCVER="9.1.0"
+export BUILD_PREFIX="x86_64-aros"
+
+# AROS doesn't compile in the same directory
+rm -rf /opt/$BUILD_PREFIX && mkdir /opt/$BUILD_PREFIX
+
+DEST=tmp-build
+rm -rf $DEST && mkdir $DEST
+cp -r AROS-main/bin $DEST
+cd $DEST
+
+../AROS-main/configure \
+    --target=$BUILD_EXT --enable-ccache \
+    --with-iconset=$BUILD_ICONSET --enable-build-type=nightly \
+    --with-serial-debug \
+    --with-binutils-version=$BUILD_BINUTILSVER \
+    --with-gcc-version=$BUILD_GCCVER \
+    --with-aros-toolchain-install=/opt/$BUILD_PREFIX
+```
+
+and then compile the toolchain:
+
+```
+$ cd tmp-build
+$ make -j8
+```
+
 ## Building the Docker container
 
 The Dockerfile in this repo will compile AROS in order to have a toolchain working for building AROS applications.
 
 This image is built from the [amigadev/docker-base:latest](https://github.com/AmigaPorts/docker-base) base image.
 
-### Build the Docker container
-
-docker build --rm -t "amigadev/arosv1-cross-toolchain:x86_64" -f Dockerfile.x86_64 .
+`docker build --rm -t "amigadev/arosv1-cross-toolchain:x86_64" -f Dockerfile.x86_64 .`
 
 Compiling AROS requires some external packages. If you already have them in `./bin/Sources/` you can use them and save some time on compilation (and allow an offline image build):
 
-docker build --rm -t "amigadev/arosv1-cross-toolchain:x86_64" --build-arg HAVE_LOCAL_PACKAGES=1 -f Dockerfile.x86_64 .
+`docker build --rm -t "amigadev/arosv1-cross-toolchain:x86_64" --build-arg HAVE_LOCAL_PACKAGES=1 -f Dockerfile.x86_64 .`
 
 It also needs the [contribs packages](https://github.com/AmigaPorts/AROS-contrib) (third-party libraries). If you already have a "contrib" directory, it will be used instead of checking out the repo.
 
 To run the image for tests/debugging:
 
-docker run --rm -it "amigadev/arosv1-cross-toolchain:x86_64" /bin/bash
+`docker run --rm -it "amigadev/arosv1-cross-toolchain:x86_64" /bin/bash`
 
 ## Contributing
 
